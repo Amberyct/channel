@@ -26,6 +26,18 @@ let router= new Router({
       path: 'limitadd',
       name: 'limitadd',
       component: () => import('@/components/limit/add.vue'),
+    },  {
+      path: 'useradd',
+      name: 'useradd',
+      component: () => import('@/components/user/add.vue'),
+    }, {
+      path: 'userlist',
+      name: 'userlist',
+      component: () => import('@/components/user/list.vue'),
+    },  {
+      path: 'useredit/:id',
+      name: 'useredit',
+      component: () => import('@/components/user/edit.vue'),
     }, 
   ]
   }, {

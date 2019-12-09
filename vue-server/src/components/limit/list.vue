@@ -14,7 +14,7 @@
       <el-table-column fixed="right" label="操作" width="120">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
+            @click.native.prevent="deleteRow(scope.$index, tableData,scope.row._id)"
             type="text"
             size="small"
           >移除</el-button>
@@ -27,24 +27,20 @@
 <script>
 export default {
   mounted() {
-    this.axios.get("limitlist").then(res => {
-      let info = res.data.info;
-      for (let v of info) {
-        let obj = {
-          name: v.name,
-          title: v.title,
-          _id:v._id,
-          pid: v.pid
-        };
-        this.tableData.push(obj);
-      }
-
-      console.log(res.data.info);
-    });
+   this.list()
   },
   methods: {
-    deleteRow(index, rows) {
-      rows.splice(index, 1);
+    deleteRow(index, rows,id) {
+      console.log(id)
+      this.axios.get('/limitdel',{params:{_id:id}}).then(res=>{
+        this.list()
+      })
+    },
+    list(){
+       this.axios.get("limitlist").then(res => {
+        this.tableData=res.data.info;
+      // console.log(res.data.info);
+    });
     }
   },
   data() {

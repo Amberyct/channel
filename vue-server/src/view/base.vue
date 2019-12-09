@@ -8,36 +8,20 @@
         <el-aside width="200px">
           <!-- 左侧导航 -->
           <el-col :span="24">
-            <el-menu
-              default-active="2"
-              class="el-menu-vertical-demo"
-            
-            >
+            <el-menu default-active="1" class="el-menu-vertical-demo">
               <!-- 统计 -->
-              <el-submenu index="1">
+              <el-submenu v-for="(v,i) in limitlist" :key="v._id" :index="`${i+1}`">
                 <template slot="title">
                   <i class="el-icon-location"></i>
-                  <span>统计</span>
+                  <span>{{v.title}}</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-1" @click="$router.push({'name':'fxuser'})">用户分析</el-menu-item>
-                  <el-menu-item index="1-2" @click="$router.push({'name':'fxorder'})">订单分析</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <!-- 管理 -->
-              <el-menu-item index="2">
-                <i class="el-icon-menu"></i>
-                <span slot="title">管理</span>
-              </el-menu-item>
-              
-  <!-- 权限管理 -->
-               <el-submenu index="3">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>权限管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="3-1" @click="$router.push({'name':'limitlist'})">权限列表</el-menu-item>
+                  <el-menu-item
+                    v-for="(v1,i1) in v.children"
+                    :key="i1"
+                    :index="`${i+1}-${i1+1}`"
+                    @click="$router.push({'name':v1.name})"
+                  >{{v1.title}}</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
             </el-menu>
@@ -46,7 +30,7 @@
 
         <!-- 右侧 -->
         <el-main>
-          <router-view/>
+          <router-view />
         </el-main>
       </el-container>
     </el-container>
@@ -54,7 +38,34 @@
 </template>
 
 <script>
-export default {};
+export default {
+  mounted() {
+    this.axios.get("/limitlist").then(res => {
+      console.log(res.data.info);
+      this.limitlist = this.tree(res.data.info, 0);
+    });
+  },
+  methods: {
+    tree(info, pid) {
+      var data = [];
+      for (let i in info) {
+        if (info[i].pid == pid) {
+          let x = {
+            ...info[i],
+            children: this.tree(info, info[i]._id)
+          };
+          data.push(x);
+        }
+      }
+      return data;
+    }
+  },
+  data() {
+    return {
+      limitlist: []
+    };
+  }
+};
 </script>
 
 <style>
