@@ -18,7 +18,16 @@ let router= new Router({
       path: 'fxorder',
       name: 'fxorder',
       component: () => import('@/components/fenxi/order.vue'),
-    }, ]
+    },  {
+      path: 'limitlist',
+      name: 'limitlist',
+      component: () => import('@/components/limit/list.vue'),
+    },  {
+      path: 'limitadd',
+      name: 'limitadd',
+      component: () => import('@/components/limit/add.vue'),
+    }, 
+  ]
   }, {
     path: '/login',
     name: 'login',

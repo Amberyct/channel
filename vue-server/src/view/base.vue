@@ -30,6 +30,16 @@
                 <span slot="title">管理</span>
               </el-menu-item>
               
+  <!-- 权限管理 -->
+               <el-submenu index="3">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>权限管理</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="3-1" @click="$router.push({'name':'limitlist'})">权限列表</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
             </el-menu>
           </el-col>
         </el-aside>

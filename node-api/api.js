@@ -23,7 +23,7 @@ const jwt = require('jsonwebtoken')
 // 登录接口---返回token，用户ID
 app.post('/login',(req,res)=>{
     let {name,password}=req.body
-    console.log(req.body.name,req.body.password)
+    // console.log(req.body.name,req.body.password)
     adminsModel.findOne({"name":name,"password":password},(err,data)=>{
         if(err) throw err
         // console.log(data)
@@ -31,7 +31,7 @@ app.post('/login',(req,res)=>{
             let content ={name:data._id}; // 要生成token的主题信息
             let secretOrPrivateKey="channel" // 这是加密的key（密钥） 
             let token = jwt.sign(content, secretOrPrivateKey, {
-                    expiresIn: 60  // 60s过期
+                    expiresIn: 60*60 // 1h过期
                 });
 
             res.send({"err_code":200,"id":data._id,token:token})
@@ -58,7 +58,48 @@ app.get('/checktoken',(req, res)=>{
 })
 
 
+const limitsModel=require('./model/limits.js')
+// 添加权限
+app.post('/limitadd',(req,res)=>{
+    // 接收参数
+    let{title,name,pid}=req.body
+    let obj={
+        "title":title,
+        "name":name,
+        "pid":pid
+    }
+    limitsModel.create(obj,(err,data)=>{
+        if(err) {
+            res.send({"err_code":400})
+        }else{
+            res.send({"err_code":200})
+        }
+    })
+})
 
+// 获取所有权限
+app.get('/limitlist',(req,res)=>{
+    limitsModel.find({},(err,data)=>{
+        if(err) {
+            res.send({"err_code":400})
+        }else{
+            res.send({"err_code":200,"info":data})
+        }
+    })
+})
+
+
+// 根据_id删除
+app.get('/limitdel',(req,res)=>{
+let _id =req.query._id
+quanxiansModel.deleteMany({ "pid": _id }, (err, data) => {
+    // res.send(data)
+    //删除当前
+    quanxiansModel.deleteOne({ _id: _id }, (err, data) => {
+        res.send(data)
+    })
+})
+})
 app.listen(3000,(err)=>{
     if(err) throw err
     console.log('is running')
