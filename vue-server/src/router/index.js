@@ -38,7 +38,19 @@ let router= new Router({
       path: 'useredit/:id',
       name: 'useredit',
       component: () => import('@/components/user/edit.vue'),
-    }, 
+    },  {
+      path: 'adminlist',
+      name: 'adminlist',
+      component: () => import('@/components/admin/list.vue'),
+    },  {
+      path: 'adminadd',
+      name: 'adminadd',
+      component: () => import('@/components/admin/add.vue'),
+    },  {
+      path: 'adminedit/:id',
+      name: 'adminedit',
+      component: () => import('@/components/admin/edit.vue'),
+    },
   ]
   }, {
     path: '/login',
@@ -53,12 +65,17 @@ let router= new Router({
 // 全局路由守卫--验证token
 router.beforeEach((to, from, next) => {
   let token = localStorage.getItem('channeltoken')?JSON.parse(localStorage.getItem('channeltoken')).token:''
+  let id = JSON.parse(localStorage.getItem('channeltoken')).id
    if(to.name!='login'){
      axios.get('/checktoken',{
        headers:{token:token}
      }).then(res=>{
       //  console.log(res.data)
       if(res.data.err_code==200){
+        console.log(id)
+        axios.get('/checklimit',{params:{id:id,name:to.name}}).then(val=>{
+          console.log(val)
+        })
         next()
       }else{
         router.push({name:'login'})

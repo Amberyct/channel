@@ -161,56 +161,98 @@ function treedel(id, res) {
 const usersModel = require('./model/users')
 
 // 添加角色
-app.post('/useradd',(req,res)=>{
-    let {title,userid} =req.body
-    usersModel.create({'title':title,'userid':userid},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200})
+app.post('/useradd', (req, res) => {
+    let {
+        title,
+        userid
+    } = req.body
+    usersModel.create({
+        'title': title,
+        'userid': userid
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200
+            })
         }
     })
 })
 
 
 // 获取所有角色
-app.get('/userlist',(req,res)=>{
-    usersModel.find({},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200,info:data})
+app.get('/userlist', (req, res) => {
+    usersModel.find({}, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200,
+                info: data
+            })
         }
     })
 })
 
 // 删除
-app.get('/userdel',(req,res)=>{
-    usersModel.deleteOne({_id:req.query.id},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200})
+app.get('/userdel', (req, res) => {
+    usersModel.deleteOne({
+        _id: req.query.id
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200
+            })
         }
     })
 })
 // 修改角色信息
-app.get('/useridinfo',(req,res)=>{
-    usersModel.findOne({_id:req.query.id},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200,info:data})
+app.get('/useridinfo', (req, res) => {
+    usersModel.findOne({
+        _id: req.query.id
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200,
+                info: data
+            })
         }
     })
 })
-app.post('/useridedit',(req,res)=>{
-    let {id,title,userid}= req.body
-    usersModel.updateOne({_id:id},{title:title,userid:userid},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200,info:data})
+app.post('/useridedit', (req, res) => {
+    let {
+        id,
+        title,
+        userid
+    } = req.body
+    usersModel.updateOne({
+        _id: id
+    }, {
+        title: title,
+        userid: userid
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200,
+                info: data
+            })
         }
     })
 })
@@ -218,25 +260,166 @@ app.post('/useridedit',(req,res)=>{
 // 管理员管理
 
 // 添加管理员名
-app.post('/adminadd',(req,res)=>{
-    let {admin,password,userid}=req.body
-    adminsModel.create({name:admin,password:password,userid:userid},(err,data)=>{
-        if(err){
-            res.send({err_code:400})
-        }else{
-            res.send({err_code:200})
+app.post('/adminadd', (req, res) => {
+    let {
+        admin,
+        password,
+        adminid
+    } = req.body
+    adminsModel.create({
+        name: admin,
+        password: password,
+        adminid: adminid
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200
+            })
         }
     })
 })
 // 获取所有管理员
-app.get('/adminlist',(req,res)=>{
-    adminsModel.find().populate("jsid").exec((err, data) => {
-        console.log(data)
-        res.send({ "err_code": 200, info: data })
+app.get('/adminlist', (req, res) => {
+    adminsModel.find({}).populate("adminid").exec((err, data) => {
+        // console.log(data)
+        res.send({
+            "err_code": 200,
+            info: data
+        })
     })
 
 })
+// 删除管理员
+app.get('/admindel', (req, res) => {
+    let id = req.query.id
+    adminsModel.deleteOne({
+        _id: id
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200
+            })
+        }
+    })
+})
+// 根据id查找管理员
+app.get('/admininfo', (req, res) => {
+    let id = req.query.id
+    adminsModel.findOne({
+        _id: id
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200,
+                info: data
+            })
+        }
+    })
+})
+// 修改
+app.post('/adminedit', (req, res) => {
+    let {
+        id,
+        admin,
+        password,
+        adminid
+    } = req.body
+    adminsModel.updateOne({
+        _id: id
+    }, {
+        name: admin,
+        password: password,
+        adminid: adminid
+    }, (err, data) => {
+        if (err) {
+            res.send({
+                err_code: 400
+            })
+        } else {
+            res.send({
+                err_code: 200
+            })
+        }
+    })
+})
 
+// 根据 管理员id 获取 管理员 信息 以及 权限
+
+app.get("/adminlimit", (req, res) => {
+
+    let id = req.query.id;
+    // console.log(id)
+    //(id--->查询 管理员表  -- -jsid >--- 角色 --qxid[[1,2],[2,4]] )联合查询   ---->权限表 ---[{},{},{}]
+    adminsModel.findOne({
+        _id: id
+    }).populate("adminid").exec((err, data) => {
+        // res.send(data)
+        let adminObj = {
+            "_id": data._id,
+            "name": data.name,
+            "password": data.password
+        }
+        // 获取到 管理员对应的 角色 ，角色 对应的权限 。但是 权限 是一个二维数组 并有重复 
+        let qxid = data.adminid.userid;
+        // 权限数组  降维 去重
+
+        let qx = Array.from(new Set(qxid.flat(Infinity)));
+
+        limitsModel.find({
+            _id: {
+                $in: qx
+            }
+        }, (err, data) => {
+            // res.send(data);
+            adminObj.limitarr = data;
+            res.send(adminObj);
+        })
+
+    })
+})
+
+// 判断是否有权限
+app.get('/checklimit', (req, res) => {
+    let name = req.query.name
+    let id = req.query.id
+    adminsModel.findOne({
+        _id: id
+    }).populate('adminid').exec((err, data) => {
+        // console.log(data)
+        let limit = Array.from(new Set(data.adminid.userid.flat(Infinity)))
+        console.log(limit)
+        limitsModel.find({
+            _id: {
+                $in: limit
+            }
+        }), (err2, data2) => {
+            console.log(data2)
+            let f = data2.findIndex(val => val.name == name)
+            console.log(f)
+            if (f > -1) {
+                res.send({
+                    err_code: 200
+                })
+            } else {
+                res.send({
+                    err_code: 400
+                })
+            }
+        }
+    })
+})
 
 app.listen(3000, (err) => {
     if (err) throw err

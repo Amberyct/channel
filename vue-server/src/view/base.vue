@@ -3,6 +3,7 @@
     <el-container>
       <el-header>
         <h1>渠道商后台管理</h1>
+        <el-button @click="exit">退出</el-button>
       </el-header>
       <el-container class="content">
         <el-aside width="200px">
@@ -40,10 +41,19 @@
 <script>
 export default {
   mounted() {
-    this.axios.get("/limitlist").then(res => {
-      console.log(res.data.info);
-      this.limitlist = this.tree(res.data.info, 0);
-    });
+    // this.axios.get("/limitlist").then(res => {
+    //   console.log(res.data.info);
+    //   this.limitlist = this.tree(res.data.info, 0);
+    // });
+
+
+// 左侧导航请求列表
+      let id = JSON.parse(localStorage.getItem("channeltoken")).id
+      // console.log(id)
+      this.axios.get('/adminlimit',{params:{id:id}}).then(res=>{
+        // console.log(res.data)
+        this.limitlist=this.tree(res.data.limitarr,0)
+      })
   },
   methods: {
     tree(info, pid) {
@@ -58,6 +68,10 @@ export default {
         }
       }
       return data;
+    },
+    exit(){
+      localStorage.removeItem('channeltoken')
+      this.$router.push({name:'login'})
     }
   },
   data() {
