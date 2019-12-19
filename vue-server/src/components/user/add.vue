@@ -16,7 +16,7 @@
       </el-form-item>
       <el-button type="primary" @click="add">立即创建</el-button>
     </el-form>
-    {{userid}}
+    <!-- {{userid}} -->
   </div>
 </template>
 

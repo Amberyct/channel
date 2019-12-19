@@ -421,6 +421,244 @@ app.get('/checklimit', (req, res) => {
     })
 })
 
+//单 文件上传
+// 需要 multer
+// 载入  multer 
+let multer = require("multer");
+let storage = multer.diskStorage({
+    // 文件存储路径
+    destination: function (req, file, cb) {
+        cb(null, "./public/fl")
+    },
+    //文件名
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+
+let up = multer({ storage: storage });
+app.use(express.static("public"))
+app.post("/fileup", up.single("picture"), (req, res) => {
+    // 接受文件。。
+    // console.log(req.headers.host + "/fl/" + req.file.originalname)
+    let imgurl = "/fl/" + req.file.originalname;
+    res.send({ imgurl: imgurl })
+})
+
+
+// 商品分类 -- spfl 
+const spflsModel = require("./model/spfls.js")
+// 1、、 查找所有分类 ，返回 
+app.get("/spflall", (req, res) => {
+    // mongoose --- find
+    spflsModel.find({}, (err, data) => {
+        if (err) {
+            res.send({ err_code: 400 })
+        } else {
+            res.send({ err_code: 200, info: data })
+        }
+    })
+})
+// 2、添加分类
+
+app.post("/spfladd", (req, res) => {
+    let { title, imgurl, pid } = req.body;
+    // console.log(pid)
+    let obj = { "title": title, "imgurl": imgurl, "pid": pid };
+    spflsModel.create(obj, (err, data) => {
+        if (err) {
+            res.send({ err_code: 400 })
+        } else {
+            res.send({ err_code: 200 })
+        }
+    })
+})
+
+// 3、删除分类
+
+// 4、根据 分类 id  查找 分类信息
+
+//5、根据 分类 id  修改 
+
+
+
+// 商品 - 缩略图 上传 sl 
+
+let slstorage = multer.diskStorage({
+    // 文件存储路径
+    destination: function (req, file, cb) {
+        cb(null, "./public/sl")
+    },
+    //文件名
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+
+let slup = multer({ storage: slstorage });
+
+app.post("/slfileup", slup.single("sl"), (req, res) => {
+    // 接受文件。。
+    // console.log(req.headers.host + "/fl/" + req.file.originalname)
+    let imgurl = "/sl/" + req.file.originalname;
+    res.send({ imgurl: imgurl })
+})
+
+
+// 商品 - 轮播图 上传 sl 
+
+let lbstorage = multer.diskStorage({
+    // 文件存储路径
+    destination: function (req, file, cb) {
+        cb(null, "./public/lb")
+    },
+    //文件名
+    filename: function (req, file, cb) {
+        // const filenameArr = file.originalname.split('.');
+        // cb(null, Date.now() + '.' + filenameArr[filenameArr.length - 1]);
+        cb(null, file.originalname)
+    }
+})
+
+let lbup = multer({ storage: lbstorage });
+
+app.post("/lbfileup", lbup.single("lb"), (req, res) => {
+    // 接受文件。。
+    // console.log(req.file)
+    // console.log(req.headers.host + "/fl/" + req.file.originalname)
+    let imgurl = "/lb/" + req.file.originalname;
+    res.send({ imgurl: imgurl })
+})
+
+// 添加商品 sp
+// const goodsModel = require("./model/sps.js")
+app.post("/addsp", (req, res) => {
+    let { goodsname, price, goodsinfo, showhide, sizearr, slimageUrl, lbimageUrl, flid } = req.body;
+    // 将接受到的值 存入mongodb-- sps;
+    let obj = { goodsname: goodsname, price: price, goodsinfo: goodsinfo, showhide: showhide, sizearr: sizearr, slimageUrl: slimageUrl, lbimageUrl: lbimageUrl, flid: flid }
+    goodsModel.create(obj, (err, data) => {
+        if (err) {
+            res.send({ err_code: 400 })
+        } else {
+        }
+    })
+
+})
+
+
+// 商品展示 -- 分页 --接口 
+
+app.get("/pagesp", (req, res) => {
+    // page第几页 limit每页显示多少条数据
+    let page = Number(req.query.page);
+    let limit = Number(req.query.limit);
+    let query = {};
+    let flag = req.query.search;
+
+    if (flag) {
+        if (req.query.goodsname != "") {
+            const reg = new RegExp(req.query.goodsname, 'i')
+            query.goodsname = { $regex: reg }
+        }
+        if (req.query.price != "") {
+            query.price = req.query.price
+        }
+    } else {
+        query = {}
+    }
+    goodsModel.find(query, { goodsname: 1, price: 1, imageUrl: 1, showhide: 1 }).skip((page - 1) * limit).limit(limit).sort({ "_id": -1 }).exec((err, data) => {
+        res.send({ info: data })
+    })
+})
+
+// 商品总条数--
+
+app.get("/sumsp", (req, res) => {
+    let query = {};
+    let flag = req.query.search;
+
+    if (flag) {
+        // query = {
+        //     goodsname: req.query.goodsname,
+        //     price: req.query.price
+        // }
+        if (req.query.goodsname != "") {
+            const reg = new RegExp(req.query.goodsname, 'i')
+            query.goodsname = { $regex: reg }
+
+        }
+        if (req.query.price != "") {
+            query.price = req.query.price
+        }
+
+
+    } else {
+        query = {}
+    }
+    goodsModel.count(query).exec((err, data) => {
+        res.send({ sum: data })
+    })
+})
+// 根据id 改变 上架/下架
+app.get("/changeshowhide", (req, res) => {
+    let { id, showhideval } = req.query;
+    goodsModel.updateOne({ "_id": id }, { "showhide": showhideval }, (err, data) => {
+        if (err) {
+            res.send({ err_code: 400 })
+        } else {
+            res.send({ err_code: 200 })
+        }
+    })
+})
+
+// 根据id 删除 数据
+
+app.get("/delsp", (req, res) => {
+    let id = req.query.id;
+    goodsModel.deleteOne({ "_id": id }, (err, data) => {
+        if (err) {
+            res.send({ err_code: 400 })
+        } else {
+            res.send({ err_code: 200 })
+        }
+    })
+})
+
+const goodsModel = require("./model/goods")
+// 1、返回 总 条数 ===30 
+app.get("/goodsnum", (req, res) => {
+
+    goodsModel.count({}, (err, data) => {
+        res.send({ "sum": data })
+    })
+
+})
+
+//2、分页 返回 数据  page ==1  limit =3  /// 1，2，3   // 4,5,6
+
+app.get("/goodspage", (req, res) => {
+    // page  第几页
+    // limit 每页显示几条数据
+    let page = Number(req.query.page);
+    let limit = Number(req.query.limit);
+
+    // console.log(page * limit)
+
+    goodsModel.find({}).skip((page - 1) * limit).limit(limit).exec((err, data) => {
+        res.send({ "info": data })
+    })
+})
+
+
+// 统计
+// 商品分类统计
+app.get('/fxgoods',(req,res)=>{
+    goodsModel.find({},{flid:1,_id:0}).populate("flid").exec((err,data)=>{
+        res.send(data)
+    })
+})
+
+
 app.listen(3000, (err) => {
     if (err) throw err
     console.log('is running')

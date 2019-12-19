@@ -18,7 +18,7 @@
       </el-form-item>
       <el-button type="primary" @click="add">立即创建</el-button>
     </el-form>
-    {{value}}
+    <!-- {{value}} -->
   </div>
 </template>
 

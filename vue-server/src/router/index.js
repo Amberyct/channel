@@ -18,7 +18,11 @@ let router= new Router({
       path: 'fxorder',
       name: 'fxorder',
       component: () => import('@/components/fenxi/order.vue'),
-    },  {
+    },   {
+      path: 'fxgoods',
+      name: 'fxgoods',
+      component: () => import('@/components/fenxi/goods.vue'),
+    },{
       path: 'limitlist',
       name: 'limitlist',
       component: () => import('@/components/limit/list.vue'),
@@ -51,6 +55,26 @@ let router= new Router({
       name: 'adminedit',
       component: () => import('@/components/admin/edit.vue'),
     },
+    // 商品分类
+    {
+      path: 'goodspartlist',
+      name: 'goodspartlist',
+      component: () => import('@/components/goodspart/list.vue'),
+    }, {
+      path: 'goodspartadd',
+      name: 'goodspartadd',
+      component: () => import('@/components/goodspart/add.vue'),
+    },
+    // 商品管理
+    {
+      path: 'goodsadd',
+      name: 'goodsadd',
+      component: () => import('@/components/goods/add.vue'),
+    },{
+      path: 'goodslist',
+      name: 'goodslist',
+      component: () => import('@/components/goods/list.vue'),
+    },
   ]
   }, {
     path: '/login',
@@ -73,9 +97,9 @@ router.beforeEach((to, from, next) => {
       //  console.log(res.data)
       if(res.data.err_code==200){
         console.log(id)
-        axios.get('/checklimit',{params:{id:id,name:to.name}}).then(val=>{
-          console.log(val)
-        })
+        // axios.get('/checklimit',{params:{id:id,name:to.name}}).then(val=>{
+        //   console.log(val)
+        // })
         next()
       }else{
         router.push({name:'login'})
